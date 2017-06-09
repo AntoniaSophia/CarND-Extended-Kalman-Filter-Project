@@ -24,9 +24,10 @@ public:
   */
   VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
 
-  /**
-  * A helper method to calculate Jacobians.
-  */
+ /**
+   * Compute the Jacobian Matrix
+   * @param x_state The state
+   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
 
 };
