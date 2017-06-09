@@ -19,8 +19,7 @@ std::string hasData(std::string s) {
   auto b2 = s.find_first_of("]");
   if (found_null != std::string::npos) {
     return "";
-  }
-  else if (b1 != std::string::npos && b2 != std::string::npos) {
+  } else if (b1 != std::string::npos && b2 != std::string::npos) {
     return s.substr(b1, b2 - b1 + 1);
   }
   return "";
@@ -134,7 +133,7 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          // std::cout << msg << std::endl;
+          std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  
         }
