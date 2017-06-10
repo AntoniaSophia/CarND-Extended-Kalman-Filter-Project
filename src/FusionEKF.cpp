@@ -47,8 +47,8 @@ FusionEKF::FusionEKF() {
   */
 
    // set the acceleration noise components
-  noise_ax = 9;
-  noise_ay = 9;
+  noise_ax = 50;
+  noise_ay = 50;
 }
 
 /**
@@ -136,6 +136,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
 
+   
   /*****************************************************************************
    *  Prediction
    ****************************************************************************/
@@ -158,10 +159,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   //   * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
   ekf_.Q_ = MatrixXd(4, 4);
 
-  ekf_.Q_ << pow(dt, 4)/4*this->noise_ax, 0, pow(dt, 3) / 2 * this->noise_ax, 0,
-         0, pow(dt, 4) / 4 * this->noise_ay, 0, pow(dt, 3) / 2 * this->noise_ay,
-         pow(dt, 3) / 2 * this->noise_ax, 0, pow(dt, 2) * this->noise_ax, 0,
-        0, pow(dt, 3) / 2 * this->noise_ay, 0, pow(dt, 2) * this->noise_ay;
+  ekf_.Q_ << pow(dt, 4)/4.0*this->noise_ax, 0, pow(dt, 3) / 2.0 * this->noise_ax, 0,
+         0, pow(dt, 4) / 4.0 * this->noise_ay, 0, pow(dt, 3) / 2.0 * this->noise_ay,
+         pow(dt, 3) / 2.0 * this->noise_ax, 0, pow(dt, 2) * this->noise_ax, 0,
+        0, pow(dt, 3) / 2.0 * this->noise_ay, 0, pow(dt, 2) * this->noise_ay;
 
   ekf_.Predict();
   //cout << "------ Predict finished ------ " << endl;

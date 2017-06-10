@@ -35,7 +35,10 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	}
 
 	//calculate the mean
+
 	rmse = rmse/estimations.size();
+
+  cout << rmse << endl;
 
 	//calculate the squared root
 	rmse = rmse.array().sqrt();
@@ -129,8 +132,8 @@ VectorXd Tools::Polar2Cartesian(const VectorXd& x_state) {
   double y_ein = sin(phi);
   cartesian(0) = rho*x_ein;
   cartesian(1) = rho*y_ein;
-  //cartesian(2) = rho_dot*x_ein;
-  //cartesian(3) = rho_dot*y_ein;
+  cartesian(2) = rho_dot*x_ein;
+  cartesian(3) = rho_dot*y_ein;
 
   return cartesian;
 }

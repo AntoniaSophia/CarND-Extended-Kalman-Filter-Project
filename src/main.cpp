@@ -59,7 +59,7 @@ int main()
           
           MeasurementPackage meas_package;
           istringstream iss(sensor_measurment);
-    	  long long timestamp;
+    	  double timestamp;
 
     	  // reads first element from the current line
     	  string sensor_type;
