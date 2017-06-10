@@ -10,27 +10,22 @@ Tools::Tools() {}
 Tools::~Tools() {}
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
-                              const vector<VectorXd> &ground_truth) {
+		const vector<VectorXd> &ground_truth){
 
 	VectorXd rmse(4);
-	rmse << 0, 0, 0, 0;
+	rmse << 0,0,0,0;
 
 	// check the validity of the following inputs:
 	//  * the estimation vector size should not be zero
-	if (estimations.size() == 0) {
-		return rmse;
-	}
-
 	//  * the estimation vector size should equal ground truth vector size
-	if (estimations.size() != ground_truth.size()) {
+	if(estimations.size() != ground_truth.size()
+			|| estimations.size() == 0){
+		cout << "Invalid estimation or ground_truth data" << endl;
 		return rmse;
 	}
 
 	//accumulate squared residuals
-	 
-
-	//accumulate squared residuals
-	for (unsigned int i = 0; i < estimations.size(); ++i) {
+	for(unsigned int i=0; i < estimations.size(); ++i){
 
 		VectorXd residual = estimations[i] - ground_truth[i];
 
@@ -40,7 +35,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	}
 
 	//calculate the mean
-	rmse = rmse / estimations.size();
+	rmse = rmse/estimations.size();
 
 	//calculate the squared root
 	rmse = rmse.array().sqrt();
@@ -49,16 +44,20 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	return rmse;
 }
 
+
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	MatrixXd Hj(3, 4);
+
+	Hj << 0,0,0,0,0,0,0,0,0,0,0,0;
+
 	//recover state parameters
-	float px = x_state(0);
-	float py = x_state(1);
-	float vx = x_state(2);
-	float vy = x_state(3);
+	double px = x_state(0);
+	double py = x_state(1);
+	double vx = x_state(2);
+	double vy = x_state(3);
 
 	//TODO: YOUR CODE HERE 
-	float psum = pow(px, 2) + pow(py, 2);
+	double psum = pow(px, 2) + pow(py, 2);
 
 	//check division by zero
 	if (fabs(psum) < 0.0001) {
@@ -66,12 +65,12 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 		return Hj;
 	}
 
-	float pmean = sqrt(psum);
+	double pmean = sqrt(psum);
 	 
 	Hj(0, 0) = px / pmean;
 	Hj(0, 1) = py / pmean;
 
-	Hj(1, 0) = -py / psum;
+	Hj(1, 0) = -1 * (py / psum);
 	Hj(1, 1) =  px / psum;
 
 	Hj(2, 0) = py *(vx*py - vy*px) / (pow(psum, (3 / 2)));
@@ -81,4 +80,77 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	Hj(2, 3) = Hj(0, 1);
 
 	return Hj;
+}
+
+VectorXd Tools::Cartesian2Polar(const VectorXd& x_state) {
+  // result is map prediction in polar coordinates rho, phi, rho_dot
+  VectorXd h_polar(3);
+  h_polar << 0, 0, 0;
+
+  // recover state parameters
+  double px = x_state(0);
+  double py = x_state(1);
+  double vx = x_state(2);
+  double vy = x_state(3);
+
+  double epsilon = 0.00001;
+
+  if (fabs(px) < epsilon && fabs(py) < epsilon) {
+  	cout << "EPSILON!!!!" << endl;
+    return h_polar;
+  }
+
+  h_polar(0) = sqrt(pow(px, 2) + pow(py, 2));
+
+  if(fabs(px) < 0.001) {
+    px = 0.001;
+  }
+
+  h_polar(1) = atan2(py,px);
+	if (fabs(h_polar(1)) < 0.001){
+    h_polar(1) = 0.001;
+  }
+	//cout << "Tools::Cartesian2Polar --> Polar angle phi = " << h_polar(1) << endl;
+  h_polar(2) = (px*vx + py*vy)/h_polar(0);
+}
+
+VectorXd Tools::Polar2Cartesian(const VectorXd& x_state) {
+  VectorXd cartesian(4);
+  cartesian << 0, 0, 0, 0;
+
+  double rho = x_state(0);
+  double phi = x_state(1);
+	
+	// cout << "Tools::Polar2Cartesian --> Polar angle phi = " << phi << endl;
+
+  double rho_dot = x_state(2);
+
+  double x_ein = cos(phi);
+  double y_ein = sin(phi);
+  cartesian(0) = rho*x_ein;
+  cartesian(1) = rho*y_ein;
+  //cartesian(2) = rho_dot*x_ein;
+  //cartesian(3) = rho_dot*y_ein;
+
+  return cartesian;
+}
+
+std::string Tools::printVector(std::string head, const VectorXd& x_state){
+	stringstream  result;
+	
+	result << head;
+	for (int i=0; i < x_state.size(); ++i){
+		result << x_state(i) << " , ";
+	}
+	return result.str();
+}
+
+std::string Tools::printMatrix(std::string head, const MatrixXd& x_state){
+	stringstream  result;
+	
+	result << head << ": ";
+
+	result << x_state;
+
+	return result.str();
 }

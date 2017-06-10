@@ -1,6 +1,7 @@
 #ifndef KALMAN_FILTER_H_
 #define KALMAN_FILTER_H_
 #include "Eigen/Dense"
+#include "tools.h"
 
 class KalmanFilter {
 public:
@@ -22,6 +23,9 @@ public:
 
   // measurement covariance matrix
   Eigen::MatrixXd R_;
+
+  // tool object used to convert Coordiates
+  Tools tools;
 
   /**
    * Constructor
@@ -56,13 +60,13 @@ public:
    * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void Update(const Eigen::VectorXd &z);
+  std::string Update(const Eigen::VectorXd &z);
 
   /**
    * Updates the state by using Extended Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void UpdateEKF(const Eigen::VectorXd &z);
+  std::string UpdateEKF(const Eigen::VectorXd &z);
 
 };
 

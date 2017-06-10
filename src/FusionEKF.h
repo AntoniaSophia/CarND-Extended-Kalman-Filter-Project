@@ -45,8 +45,8 @@ private:
   Eigen::MatrixXd H_laser_;
   Eigen::MatrixXd Hj_;
 
-  float noise_ax;
-	float noise_ay;
+  double noise_ax;
+	double noise_ay;
 
 };
 
