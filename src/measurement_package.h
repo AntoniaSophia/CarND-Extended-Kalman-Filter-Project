@@ -1,13 +1,15 @@
-#ifndef MEASUREMENT_PACKAGE_H_
-#define MEASUREMENT_PACKAGE_H_
+/* Copyright 2017 Udacity */
+/* no obligations - feel free to copy/reuse/modify as you like*/
+#ifndef SRC_MEASUREMENT_PACKAGE_H_
+#define SRC_MEASUREMENT_PACKAGE_H_
 
 #include "Eigen/Dense"
 
 class MeasurementPackage {
-public:
-  long long timestamp_;
+ public:
+  double timestamp_;
 
-  enum SensorType{
+  enum SensorType {
     LASER,
     RADAR
   } sensor_type_;
@@ -15,4 +17,4 @@ public:
   Eigen::VectorXd raw_measurements_;
 };
 
-#endif /* MEASUREMENT_PACKAGE_H_ */
+#endif  // SRC_MEASUREMENT_PACKAGE_H_

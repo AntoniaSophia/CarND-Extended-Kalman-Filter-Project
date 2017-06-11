@@ -1,10 +1,14 @@
-#ifndef KALMAN_FILTER_H_
-#define KALMAN_FILTER_H_
-#include "Eigen/Dense"
+/* Copyright 2017 Antonia Reiter */
+/* no obligations - feel free to copy/reuse/modify as you like*/
+
+#ifndef SRC_KALMAN_FILTER_H_
+#define SRC_KALMAN_FILTER_H_
+#include <string>
 #include "tools.h"
+#include "Eigen/Dense"
 
 class KalmanFilter {
-public:
+ public:
 
   // state vector
   Eigen::VectorXd x_;
@@ -60,14 +64,13 @@ public:
    * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
-  std::string Update(const Eigen::VectorXd &z);
+  string Update(const Eigen::VectorXd &z);
 
   /**
    * Updates the state by using Extended Kalman Filter equations
    * @param z The measurement at k+1
    */
-  std::string UpdateEKF(const Eigen::VectorXd &z);
-
+  string UpdateEKF(const Eigen::VectorXd &z);
 };
 
-#endif /* KALMAN_FILTER_H_ */
+#endif  // SRC_KALMAN_FILTER_H_

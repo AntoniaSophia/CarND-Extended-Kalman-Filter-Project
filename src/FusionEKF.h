@@ -1,16 +1,19 @@
-#ifndef FusionEKF_H_
-#define FusionEKF_H_
+/* Copyright 2017 Antonia Reiter */
+/* no obligations - feel free to copy/reuse/modify as you like*/
 
-#include "measurement_package.h"
-#include "Eigen/Dense"
+#ifndef SRC_FUSIONEKF_H_
+#define SRC_FUSIONEKF_H_
+
 #include <vector>
 #include <string>
 #include <fstream>
+#include "measurement_package.h"
+#include "Eigen/Dense"
 #include "kalman_filter.h"
 #include "tools.h"
 
 class FusionEKF {
-public:
+ public:
   /**
   * Constructor.
   */
@@ -31,8 +34,9 @@ public:
   */
   KalmanFilter ekf_;
 
-private:
-  // check whether the tracking toolbox was initialized or not (first measurement)
+ private:
+  // check whether the tracking toolbox was initialized
+  // or not (first measurement)
   bool is_initialized_;
 
   // previous timestamp
@@ -40,14 +44,13 @@ private:
 
   // tool object used to compute Jacobian and RMSE
   Tools tools;
-  Eigen::MatrixXd R_laser_;
-  Eigen::MatrixXd R_radar_;
-  Eigen::MatrixXd H_laser_;
-  Eigen::MatrixXd Hj_;
+  Eigen::MatrixXd R_laser_;  // R Matrix for Laser
+  Eigen::MatrixXd R_radar_;  // R Matrix for Radar
+  Eigen::MatrixXd H_laser_;  // H Matrix for Laser
+  Eigen::MatrixXd Hj_;       // H Matrix for Radar (--> will be Jacobian Matrix)
 
   double noise_ax;
-	double noise_ay;
-
+  double noise_ay;
 };
 
-#endif /* FusionEKF_H_ */
+#endif   // SRC_FUSIONEKF_H_
