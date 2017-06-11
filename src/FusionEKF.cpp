@@ -127,10 +127,13 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   }
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    //logstr += tools.printVector("Polar Radar:", measurement_pack.raw_measurements_);
-    //logstr += tools.printVector("Cartesian Radar:", tools.Polar2Cartesian(measurement_pack.raw_measurements_));
+    // logstr += tools.printVector("Polar Radar:",
+    //                measurement_pack.raw_measurements_);
+    // logstr += tools.printVector("Cartesian Radar:",
+    //                tools.Polar2Cartesian(measurement_pack.raw_measurements_));
   } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
-    //logstr += tools.printVector("Cartesian LASER:", measurement_pack.raw_measurements_);
+    // logstr += tools.printVector("Cartesian LASER:",
+    //                measurement_pack.raw_measurements_);
   }
 
   // compute the time elapsed between the current and previous measurements
