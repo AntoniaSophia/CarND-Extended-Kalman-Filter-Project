@@ -5,8 +5,8 @@
 
 [//]: # (Image References)
 
-[image0]: ./results/best_result_dataset1.png "best_result_dataset1.png"
-[image1]: ./results/best_result_dataset2.png "best_result_dataset2.png"
+[image0]: ./../results/best_result_dataset1.png "best_result_dataset1.png"
+[image1]: ./../results/best_result_dataset2.png "best_result_dataset2.png"
 
 
 
