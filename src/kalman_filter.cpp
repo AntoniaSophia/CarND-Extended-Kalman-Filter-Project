@@ -29,61 +29,8 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
-std::string KalmanFilter::Update(const VectorXd &z) {
+std::string KalmanFilter::KalmanGain(const VectorXd &y) {
   string result = "";
-  VectorXd z_pred = H_ * x_;
-  VectorXd y = z - z_pred;
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-
-  // new estimate
-  x_ = x_ + (K * y);
-  int16_t x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
-  return result;
-}
-
-std::string KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
-
-  std::string result = "";
-
-  /* This is just a sanity check wether conversion from 
-     Cartesian to Polar is working as expected
-     result += tools.printVector("\n# x_ in Cartesian:",x_);
-     result += tools.printVector("\n# x_ in Polar:",tools.Cartesian2Polar(x_));
-     result += tools.printVector("\n# x_ again in Cartesian:",tools.Polar2Cartesian(tools.Cartesian2Polar(x_)));
-  */
-
-  VectorXd ypolar = z - tools.Cartesian2Polar(x_);
-
-   /*
-    One other important point when calculating y with radar sensor 
-    data: the second value in the polar coordinate vector is the 
-    angle ϕ. You'll need to make sure to normalize ϕ in the y vector 
-    so that its angle is between −pi and pi; in other words, add or 
-    subtract 2pi from ϕ until it is between −pi and pi.
-   */
-  if (ypolar(1) > M_PI) {
-    result += tools.printVector("# Y-Vector in Polar:", ypolar);
-    while (ypolar(1) > M_PI) {
-      ypolar(1) -= 2*M_PI;
-    }
-    result += tools.printVector("# Y-Vector in Polar (corrected) :", ypolar);
-  } else if (ypolar(1) < -M_PI) {
-    result += tools.printVector("# Y-Vector in Polar:", ypolar);
-    while (ypolar(1) < -M_PI) {
-      ypolar(1) += 2*M_PI;
-    }
-    result += tools.printVector("# Y-Vector in Polar (corrected) :", ypolar);
-  }
 
   // result += tools.printMatrix("\n# H_ :",H_)+"\n";
   MatrixXd Ht = H_.transpose();
@@ -97,11 +44,60 @@ std::string KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
   // result += tools.printMatrix("\n# K :",K)+"\n";
 
-  // new estimate
-  x_ = x_ + (K * ypolar);
+  // calculate the new estimate
+  x_ = x_ + (K * y);
 
   int16_t x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
+
+  return result;
+}
+
+std::string KalmanFilter::Update(const VectorXd &z) {
+  string result = "";
+  VectorXd z_pred = H_ * x_;
+  VectorXd y = z - z_pred;
+
+  result += KalmanGain(y);
+
+  return result;
+}
+
+std::string KalmanFilter::UpdateEKF(const VectorXd &z) {
+  std::string result = "";
+
+  /* This is just a sanity check wether conversion from 
+     Cartesian to Polar is working as expected
+     result += tools.printVector("\n# x_ in Cartesian:",x_);
+     result += tools.printVector("\n# x_ in Polar:",tools.Cartesian2Polar(x_));
+     result += tools.printVector("\n# x_ again in Cartesian:",tools.Polar2Cartesian(tools.Cartesian2Polar(x_)));
+  */
+
+  VectorXd y_polar = z - tools.Cartesian2Polar(x_);
+
+   /*
+    One other important point when calculating y with radar sensor 
+    data: the second value in the polar coordinate vector is the 
+    angle ϕ. You'll need to make sure to normalize ϕ in the y vector 
+    so that its angle is between −pi and pi; in other words, add or 
+    subtract 2pi from ϕ until it is between −pi and pi.
+   */
+  if (y_polar(1) > M_PI) {
+    result += tools.printVector("# Y-Vector in Polar:", y_polar);
+    while (y_polar(1) > M_PI) {
+      y_polar(1) -= 2*M_PI;
+    }
+    result += tools.printVector("# Y-Vector in Polar (corrected) :", y_polar);
+  } else if (y_polar(1) < -M_PI) {
+    result += tools.printVector("# Y-Vector in Polar:", y_polar);
+    while (y_polar(1) < -M_PI) {
+      y_polar(1) += 2*M_PI;
+    }
+    result += tools.printVector("# Y-Vector in Polar (corrected) :", y_polar);
+  }
+
+  result += KalmanGain(y_polar);
+
   return result;
 }

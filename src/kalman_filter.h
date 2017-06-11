@@ -62,6 +62,13 @@ class KalmanFilter {
 
   /**
    * Updates the state by using standard Kalman Filter equations
+   * This is the generic part of Laser and Radar calculations
+   * @param z The measurement at k+1
+   */
+  string KalmanGain(const Eigen::VectorXd &z);
+
+  /**
+   * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
   string Update(const Eigen::VectorXd &z);

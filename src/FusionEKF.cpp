@@ -52,8 +52,12 @@ FusionEKF::FusionEKF() {
 
   // set the acceleration noise components
   //   * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
-  noise_ax = 9.;
-  noise_ay = 9.;
+  //noise_ax = 9.;
+  //noise_ay = 9.;
+
+  // however I get best results using these values...
+  noise_ax = 50.;
+  noise_ay = 50.;
 }
 
 /**
