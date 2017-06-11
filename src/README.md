@@ -13,7 +13,7 @@
 Of course the Kalman filter based on the sensor fusion of Lidar and Radar produces the best results.
 I tried out using just Lidar and Radar (actually this just means commenting out line 194 or 199 in file FusionEKF.cpp) and both results are worse compared to the sensor fusion Kalman filter. 
 The simple reason is that more measure points are feed into the Kalman filter compared to using only one sensor signal.
-The other reason is that Lidar and Radar can balance their individual strenghts and especially weaknesses.
+The other reason is that Lidar and Radar can balance their individual strenghts and especially weaknesses. For example using only Lidar produces relatively good results on X and Y coordinates, but very poor results regarding velocity vx and vy. This is totally expected from the following list of strenghts and weaknesses.
 
 ####Advantages of Lidar:
 * spacial resolution
