@@ -71,20 +71,35 @@ class UKF {
   ///* Sigma point spreading parameter
   double lambda_;
 
-
   ///* the current NIS for radar
   double NIS_radar_;
 
   ///* the current NIS for laser
   double NIS_laser_;
 
+  ///* Tools for helper functions
   Tools tools;
+
+  ///* The "neutral" state vector for EKF and UKF: px, px, vx, vy
   VectorXd averaged_;
+
+  ///* Time steps since the first measurement (actually an integer)
   double Time_Step_;
+
+  ///* Threshold for the 95% mark of radar NIS
   double NIS_radar_threshold_;
+
+  ///* Threshold for the 95% mark of laser NIS
   double NIS_laser_threshold_;
+
+  ///* Number of occurences where the radar NIS is greater than 95% mark
   double NIS_radar_over_threshold_;
+
+  ///* Number of occurences where the lidar NIS is greater than 95% mark
   double NIS_laser_over_threshold_;
+
+  ///* Instance of the Extended Kalman Filter --> I want to have both in one SW
+  FusionEKF ekf_;
 
   /**
    * Constructor
@@ -121,12 +136,21 @@ class UKF {
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
+  /**
+   * Calculation of the agumented sigma points
+   */
   void AugmentedSigmaPoints();
 
+  /**
+   * Prediction of the Sigma points
+   * @param delta_t which is the time delta since the last prediction (in seconds)
+   */  
   void SigmaPointPrediction(double delta_t);
-  void PredictMeanAndCovariance();
 
-  FusionEKF ekf_;
+  /**
+   * Prediction of the Mean and Covariance Matrix
+   */ 
+  void PredictMeanAndCovariance();
 };
 
 #endif  // SRC_UKF_H_

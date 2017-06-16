@@ -14,8 +14,8 @@ UKF::UKF() {
   is_initialized_ = false;
   previous_timestamp_ = 0;
   Time_Step_ = 0;
-  NIS_radar_threshold_ = 7;
-  NIS_laser_threshold_ = 7;
+  NIS_radar_threshold_ = 7.8;  // this is the 95% mark of the NIS distribution
+  NIS_laser_threshold_ = 7.8;  // this is the 95% mark of the NIS distribution
   NIS_radar_over_threshold_ = 0;
   NIS_laser_over_threshold_ = 0;
 
