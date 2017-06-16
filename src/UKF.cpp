@@ -137,6 +137,7 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
         float ro_dot = measurement_pack.raw_measurements_(2);
         x_(0) = ro     * cos(phi);
         x_(1) = ro     * sin(phi);
+        x_(2) = ro_dot;
       }
 
     previous_timestamp_ = measurement_pack.timestamp_;
