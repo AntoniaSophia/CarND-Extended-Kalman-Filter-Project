@@ -33,7 +33,6 @@ int main() {
   // Create a Kalman Filter instance
   FusionEKF fusionEKF;
   UKF ukf;
-
   // used to compute the RMSE later
   Tools tools;
   vector<VectorXd> estimations;
@@ -106,36 +105,31 @@ int main() {
           // Call ProcessMeasurment(meas_package) for Kalman filter
           //fusionEKF.ProcessMeasurement(meas_package);
           ukf.ProcessMeasurement(meas_package);
+          cout << tools.printVector("Result KF: " , ukf.x_) << endl;
 
+          //cout << tools.printVector("Result KF: " , fusionEKF.ekf_.x_) << endl;
           // Push the current estimated x,y positon from the
           // Kalman filter's state vector
           VectorXd estimate(4);
-
-          //*****************************
-          // Using EKF
-          //*****************************
-          //double p_x = fusionEKF.ekf_.x_(0);
-          //double p_y = fusionEKF.ekf_.x_(1);
-          //double v1  = fusionEKF.ekf_.x_(2);
-          //double v2 = fusionEKF.ekf_.x_(3);
-          //*****************************
-
-          //*****************************
-          // Using UKF
-          //*****************************
+          
+          /*
+          double p_x = fusionEKF.ekf_.x_(0);
+          double p_y = fusionEKF.ekf_.x_(1);
+          double v1  = fusionEKF.ekf_.x_(2);
+          double v2 = fusionEKF.ekf_.x_(3);
+          */
           double p_x = ukf.x_(0);
           double p_y = ukf.x_(1);
           double v  = ukf.x_(2);
           double yaw = ukf.x_(3);
-    	    double v_x = cos(yaw)*v;
-          double v_y = sin(yaw)*v;
-          //*****************************
-          
 
+          double v1 = cos(yaw)*v;
+          double v2 = sin(yaw)*v;
+          
           estimate(0) = p_x;
           estimate(1) = p_y;
-          estimate(2) = v_x;
-          estimate(3) = v_y;
+          estimate(2) = v1;
+          estimate(3) = v2;
 
           estimations.push_back(estimate);
 

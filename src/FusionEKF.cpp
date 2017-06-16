@@ -70,7 +70,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   // cout << "" << endl;
   // cout << "-------------------------------------------------------" << endl;
   // cout << " Processing new measurement pack for sensor:   " << measurement_pack.sensor_type_ << endl;  
-  // cout << " Raw measurement: \n" << measurement_pack.raw_measurements_ << endl;
+  cout << " Raw measurement: \n" << measurement_pack.raw_measurements_ << endl;
 
   string logstr = "";
 
@@ -140,7 +140,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   // dt - expressed in seconds
   double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
   previous_timestamp_ = measurement_pack.timestamp_;
-
+  // cout << "Delta_t = " << dt << endl;
 
   /*****************************************************************************
    *  1. Step: Prediction
@@ -191,12 +191,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // Radar updates
     ekf_.R_ = this->R_radar_;
     ekf_.H_ = tools.CalculateJacobian(ekf_.x_);  // for Radar use the Jacobian!!
-    logstr += ekf_.UpdateEKF(measurement_pack.raw_measurements_);
+    //logstr += ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // Laser updates
     ekf_.R_ = this->R_laser_;
     ekf_.H_ = this->H_laser_;
-    logstr += ekf_.Update(measurement_pack.raw_measurements_);
+    //logstr += ekf_.Update(measurement_pack.raw_measurements_);
   }
 
   // cout << "------ Update finished ------ " << endl;

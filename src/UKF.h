@@ -1,18 +1,19 @@
-#ifndef UKF_H
-#define UKF_H
+/* Copyright 2017 Antonia Reiter */
+/* no obligations - feel free to copy/reuse/modify as you like*/
+#ifndef SRC_UKF_H_
+#define SRC_UKF_H_
 
-#include "measurement_package.h"
-#include "Eigen/Dense"
 #include <vector>
 #include <string>
 #include <fstream>
+#include "measurement_package.h"
+#include "Eigen/Dense"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 class UKF {
-public:
-
+ public:
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
 
@@ -31,8 +32,10 @@ public:
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
+  MatrixXd Xsig_aug_;
+
   ///* time when the state is true, in us
-  long long previous_timestamp_;
+  double previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -53,7 +56,7 @@ public:
   double std_radphi_;
 
   ///* Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_ ;
+  double std_radrd_;
 
   ///* Weights of sigma points
   VectorXd weights_;
@@ -109,16 +112,10 @@ public:
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
+  void AugmentedSigmaPoints();
 
-  /** calculate sigma points ...
-   * @param XSig_out: set sigma points as columns of matrix Xsig
-   */ 
-  void GenerateSigmaPoints(MatrixXd* Xsig_out);
-
-  void AugmentedSigmaPoints(MatrixXd* Xsig_out);
-
-  void SigmaPointPrediction(double delta_t, MatrixXd Xsig_aug, MatrixXd* Xsig_out);
-  void PredictMeanAndCovariance(MatrixXd Xsig_pred, VectorXd* x_out, MatrixXd* P_out);
+  void SigmaPointPrediction(double delta_t);
+  void PredictMeanAndCovariance();
 };
 
-#endif /* UKF_H */
+#endif  // SRC_UKF_H_
