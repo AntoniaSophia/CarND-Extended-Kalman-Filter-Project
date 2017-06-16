@@ -8,6 +8,7 @@
 #include <fstream>
 #include "measurement_package.h"
 #include "Eigen/Dense"
+#include "FusionEKF.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -77,6 +78,14 @@ class UKF {
   ///* the current NIS for laser
   double NIS_laser_;
 
+  Tools tools;
+  VectorXd averaged_;
+  double Time_Step_;
+  double NIS_radar_threshold_;
+  double NIS_laser_threshold_;
+  double NIS_radar_over_threshold_;
+  double NIS_laser_over_threshold_;
+
   /**
    * Constructor
    */
@@ -116,6 +125,8 @@ class UKF {
 
   void SigmaPointPrediction(double delta_t);
   void PredictMeanAndCovariance();
+
+  FusionEKF ekf_;
 };
 
 #endif  // SRC_UKF_H_

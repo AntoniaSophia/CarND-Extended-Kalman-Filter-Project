@@ -13,6 +13,16 @@ using std::vector;
 UKF::UKF() {
   is_initialized_ = false;
   previous_timestamp_ = 0;
+  Time_Step_ = 0;
+  NIS_radar_threshold_ = 7;
+  NIS_laser_threshold_ = 7;
+  NIS_radar_over_threshold_ = 0;
+  NIS_laser_over_threshold_ = 0;
+
+
+  ekf_ = FusionEKF();
+  averaged_ = VectorXd(4);
+
 
   // if this is false, laser measurements will be ignored (except during init)
   use_laser_ = true;
@@ -102,7 +112,9 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
    **************************************************************************/
   if (is_initialized_ == false) {
     // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
-    x_ << 0, 0, 0, 0, 0;
+    x_ << 0, 0.5, 0, 0, 0;
+    averaged_ << 0, 0.5, 0, 0;
+
     // x_ << 1, 1, 1, 1, 0.1;
     // init covariance matrix
     P_ << 0.15,    0, 0, 0, 0,
@@ -135,11 +147,12 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
   } else {
     /**
        Do nothing - and for heaven's sake don't set the measurement pack
-                    data again for state vector x_ 
+                    data again for state vector x_ !!
                     otherwise you will get no Kalman Filter but a value jumper ;-) 
     **/
   }
 
+  Time_Step_ += 1;
   // compute the time elapsed between the current and previous measurements
   // dt - expressed in seconds
   double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
@@ -153,6 +166,39 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
   } else {
     UpdateLidar(measurement_pack);
   }
+
+
+  // Set useUKF = true in case you want to use the Unscented Kalman Filter
+  // Set useUKF = false in case you want to use the Extenden Kalman Filter
+  bool useUKF = true;
+
+  if (useUKF == true) {
+    // I've just moved this conversion for the main version to here
+    // the reason is that I wanted to have a common SW for EKF and UKF
+    double v   = x_(2);
+    double yaw = x_(3);
+
+    double v1 = cos(yaw)*v;
+    double v2 = sin(yaw)*v;
+
+    averaged_(0) = x_(0);
+    averaged_(1) = x_(1);
+    averaged_(2) = v1;
+    averaged_(3) = v2;
+
+  } else {
+    /** Additionally run the the Extended Kalman Filter 
+        in order to be able to switch from EKF to UKF
+    **/
+    ekf_.ProcessMeasurement(measurement_pack);
+
+    averaged_(0) = ekf_.ekf_.x_(0);
+    averaged_(1) = ekf_.ekf_.x_(1);
+    averaged_(2) = ekf_.ekf_.x_(2);
+    averaged_(3) = ekf_.ekf_.x_(3);
+  }
+
+  // cout << tools.printVector("Result status vector: " , averaged_) << endl;
 }
 
 /**
@@ -415,7 +461,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
   // calculate the radar NIS
   NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
-  cout << "NIS_radar_ = " << NIS_radar_ << endl;
+
+  if (NIS_radar_ > NIS_radar_threshold_) {
+    NIS_radar_over_threshold_ += 1;
+    cout << "NIS_radar_over_threshold_ = " << NIS_radar_over_threshold_
+         << " which is in percent: "
+         << 100.0*(NIS_radar_over_threshold_/Time_Step_) << endl;
+  }
 }
 
 /**
@@ -429,7 +481,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   position. Modify the state vector, x_, and covariance, P_.
   You'll also need to calculate the lidar NIS.
   */
-  cout << "Vor UpdateLidar" << endl;
+
   // set measurement dimension, lidar can measure px and py
   int n_z = 2;
 
@@ -495,5 +547,14 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
   // laser NIS
   NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
-  cout << "NIS_laser_ = " << NIS_laser_ << endl;
+
+  if (NIS_laser_ > NIS_laser_threshold_) {
+    NIS_laser_over_threshold_ += 1;
+
+    cout << "NIS_laser_over_threshold_ = " << NIS_laser_over_threshold_
+         << " which is in percent: "
+         << 100.0*(NIS_laser_over_threshold_/Time_Step_) << endl;
+  }
+
+  // cout << "NIS_laser_ = " << NIS_laser_ << endl;
 }
